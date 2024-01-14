@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:wallpaperapp/Models/wallpaper_model.dart';
 import 'package:wallpaperapp/screens/Categories_screen.dart';
+import 'package:wallpaperapp/screens/searched_wallpaper_screen.dart';
 import 'package:wallpaperapp/screens/wallpaper_screen.dart';
 import 'package:http/http.dart'as http;
 
@@ -52,7 +53,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    wallpaper=getWallpaper('abstract');
+    wallpaper=getWallpaper('abstract , cars, landscape');
 
   }
 
@@ -87,6 +88,7 @@ class _HomePageState extends State<HomePage> {
                             setState(() {
 
                             });
+                           Navigator.push(context, MaterialPageRoute(builder: (context) =>searchedWallpaper(image: searchController.text.toString(), text: searchController.text)));
                           }, icon: Icon(Icons.search)),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(21),
@@ -208,13 +210,7 @@ class _HomePageState extends State<HomePage> {
                         6,
                         (index) => GestureDetector(
                               onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => natureCategories(
-                                            title: listTitles2[index],
-                                            list: listImages2)));
-                              },
+                                     },
                               child: Container(
                                 // margin: EdgeInsets.all(10),
                                 decoration: BoxDecoration(

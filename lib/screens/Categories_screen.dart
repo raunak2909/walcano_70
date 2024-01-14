@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wallpaperapp/Models/wallpaper_model.dart';
 
-class natureCategories extends StatelessWidget {
-  const natureCategories({super.key, required this.title, required this.list});
+class CategoriesScreen extends StatelessWidget {
+  CategoriesScreen({super.key, required this.title, required this.image, required this.wallpaper});
     final String title;
-    final List<String> list;
+    String? image;
+    WallpaperModel? wallpaper;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +31,7 @@ class natureCategories extends StatelessWidget {
                 width: 400,
                 margin: EdgeInsets.only(left: 20),
                 child: Text(
-                  '${list.length} Wallpapers available',
+                  'Wallpapers available',
                   style: GoogleFonts.roboto(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
@@ -48,18 +50,6 @@ class natureCategories extends StatelessWidget {
                   },
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: MasonryGridView.builder(
-                      itemCount: list.length,
-                      gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2),
-                      itemBuilder: (context, index) => Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child:
-                                Image.network(list[index])),
-                      ),
-                    ),
                   ),
                 ),
               ),
