@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wallpaperapp/Models/wallpaper_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:wallpaperapp/screens/wallpaper_screen.dart';
 
 class searchedWallpaper extends StatefulWidget {
-   searchedWallpaper({super.key, required this.image, required this.text});
+   searchedWallpaper({super.key, required this.text});
    String text;
-  String image;
 
   @override
   State<searchedWallpaper> createState() => _searchedWallpaperState();
@@ -23,29 +23,41 @@ class _searchedWallpaperState extends State<searchedWallpaper> {
   void initState() {
     super.initState();
 
-    wallpaper = getWallpaper('');
+    wallpaper = getWallpaper(widget.text);
   }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(left: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             children: [
-              Text("${widget.text}",style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 55),),
-              SizedBox(height: 30,),
-              FutureBuilder(future: wallpaper,builder: (context,snapshot){
-                if(snapshot.hasData){
-                  return GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2), itemBuilder: (_,index){
-                    return GridTile(child: Image.network('${widget.image}'));
-                  });
-                }
-                else if(snapshot.hasError){
-                  Center(child: Text('${snapshot.hasError.toString()}'),);
-                }
-                  return Center(child: CircularProgressIndicator(),);
-              })
+              Text(widget.text,style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 55),),
+              const SizedBox(height: 30,),
+              Expanded(
+                child: FutureBuilder(future: wallpaper,builder: (context,snapshot){
+                  if(snapshot.hasData){
+                    return GridView.builder(gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, childAspectRatio: 9/16, mainAxisSpacing: 10,crossAxisSpacing: 10),
+                        itemCount: snapshot.data!.photos!.length,
+                        itemBuilder: (_,index){
+                      return InkWell(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => wallpaperScreen(image: snapshot.data!.photos![index].src!.portrait),));
+                        },
+                        child: GridTile(
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.network('${snapshot.data!.photos![index].src!.portrait}', fit: BoxFit.fill,))),
+                      );
+                    });
+                  }
+                  else if(snapshot.hasError){
+                    Center(child: Text(snapshot.hasError.toString()),);
+                  }
+                    return const Center(child: CircularProgressIndicator(),);
+                }),
+              )
             ],
           ),
         ),
@@ -61,6 +73,8 @@ class _searchedWallpaperState extends State<searchedWallpaper> {
       return WallpaperModel.fromJson(photos);
     }else{
       return WallpaperModel();
+
     }
+
   }
 }

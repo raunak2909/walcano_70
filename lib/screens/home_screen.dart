@@ -27,22 +27,38 @@ class _HomePageState extends State<HomePage> {
     Colors.lightGreen,
   ];
 
-  List<String> listImages2 = [
-    'https://images.unsplash.com/photo-1574169208507-84376144848b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YWJzdHJhY3R8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60',
-    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bmF0dXJlfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60',
-    'https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHNjaWVuY2V8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60',
-    'https://images.unsplash.com/photo-1456926631375-92c8ce872def?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGFuaW1hbHN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60',
-    'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2Fyc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
-    'https://images.unsplash.com/photo-1694505396696-b093cca3d8ea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDd8eGpQUjRobGtCR0F8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
-  ];
 
-  List<String> listTitles2 = [
-    'Abstract',
-    'Nature',
-    'Science',
-    'Animals',
-    'Cars',
-    'Foods'
+  List<Map<String,String>> listTitles2 = [
+    {
+      'title' : 'Abstract',
+      'image' : 'https://images.unsplash.com/photo-1574169208507-84376144848b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YWJzdHJhY3R8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60',
+
+    },
+    {
+      'title' : 'Nature',
+      'image' :     'https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bmF0dXJlfGVufDB8fDB8fHww&auto=format&fit=crop&w=500&q=60',
+
+    },
+    {
+      'title' : 'Science',
+      'image' :     'https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fHNjaWVuY2V8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60',
+
+    },
+    {
+      'title' : 'Animals',
+      'image' :    'https://images.unsplash.com/photo-1456926631375-92c8ce872def?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGFuaW1hbHN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=500&q=60',
+
+    },
+    {
+      'title' : 'Cars',
+      'image' :     'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2Fyc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60',
+
+    },
+    {
+      'title' : 'Foods',
+      'image' :     'https://images.unsplash.com/photo-1694505396696-b093cca3d8ea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHx0b3BpYy1mZWVkfDd8eGpQUjRobGtCR0F8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=60',
+
+    },
   ];
 
   TextEditingController searchController = TextEditingController();
@@ -53,7 +69,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
-    wallpaper=getWallpaper('abstract , cars, landscape');
+    wallpaper=getWallpaper();
 
   }
 
@@ -84,11 +100,8 @@ class _HomePageState extends State<HomePage> {
                       decoration: InputDecoration(
                           hintText: ('Find Wallpaper...'),
                           suffixIcon: IconButton(onPressed: (){
-                            wallpaper = getWallpaper(searchController.text.toString());
-                            setState(() {
 
-                            });
-                           Navigator.push(context, MaterialPageRoute(builder: (context) =>searchedWallpaper(image: searchController.text.toString(), text: searchController.text)));
+                           Navigator.push(context, MaterialPageRoute(builder: (context) =>searchedWallpaper( text: searchController.text)));
                           }, icon: Icon(Icons.search)),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(21),
@@ -210,6 +223,7 @@ class _HomePageState extends State<HomePage> {
                         6,
                         (index) => GestureDetector(
                               onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => searchedWallpaper( text:  listTitles2[index]['title']!,)));
                                      },
                               child: Container(
                                 // margin: EdgeInsets.all(10),
@@ -217,11 +231,11 @@ class _HomePageState extends State<HomePage> {
                                     borderRadius: BorderRadius.circular(15),
                                     image: DecorationImage(
                                       fit: BoxFit.cover,
-                                      image: NetworkImage(listImages2[index]),
+                                      image: NetworkImage(listTitles2[index]['image']!),
                                     )),
                                 child: Center(
                                     child: Text(
-                                  listTitles2[index],
+                                  listTitles2[index]['title']!,
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 25,
@@ -239,8 +253,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<WallpaperModel> getWallpaper(String search)async{
-    var url = "https://api.pexels.com/v1/search?query=$search";
+  Future<WallpaperModel> getWallpaper()async{
+    var url = "https://api.pexels.com/v1/curated";
     var response = await http.get(Uri.parse(url),headers: {"Authorization": myKey});
 
     if(response.statusCode==200){
