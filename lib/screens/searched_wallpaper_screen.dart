@@ -1,14 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:wallpaperapp/Models/wallpaper_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:wallpaperapp/screens/wallpaper_screen.dart';
 
 class searchedWallpaper extends StatefulWidget {
-   searchedWallpaper({super.key, required this.text});
-   String text;
+   searchedWallpaper({super.key, required this.query, this.colorCode});
+   String query;
+   String? colorCode;
 
   @override
   State<searchedWallpaper> createState() => _searchedWallpaperState();
@@ -23,7 +23,7 @@ class _searchedWallpaperState extends State<searchedWallpaper> {
   void initState() {
     super.initState();
 
-    wallpaper = getWallpaper(widget.text);
+    wallpaper = getWallpaper(widget.query.isNotEmpty ? widget.query : "car");
   }
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class _searchedWallpaperState extends State<searchedWallpaper> {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             children: [
-              Text(widget.text,style: GoogleFonts.montserrat(fontWeight: FontWeight.bold,fontSize: 55),),
+              Text(widget.query,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 55),),
               const SizedBox(height: 30,),
               Expanded(
                 child: FutureBuilder(future: wallpaper,builder: (context,snapshot){
@@ -43,7 +43,7 @@ class _searchedWallpaperState extends State<searchedWallpaper> {
                         itemBuilder: (_,index){
                       return InkWell(
                         onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => wallpaperScreen(image: snapshot.data!.photos![index].src!.portrait),));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => wallpaperScreen(image: snapshot.data!.photos![index].src!.portrait!),));
                         },
                         child: GridTile(
                             child: ClipRRect(
@@ -65,7 +65,7 @@ class _searchedWallpaperState extends State<searchedWallpaper> {
     );
   }
   Future<WallpaperModel> getWallpaper(String search)async{
-    var url = "https://api.pexels.com/v1/search?query=$search";
+    var url = "https://api.pexels.com/v1/search?query=$search&color=${widget.colorCode ?? ""}";
     var response = await http.get(Uri.parse(url),headers: {"Authorization": myKey});
 
     if(response.statusCode==200){

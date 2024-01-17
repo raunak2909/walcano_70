@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:wallpaperapp/Models/wallpaper_model.dart';
 
 class CategoriesScreen extends StatelessWidget {
@@ -21,7 +20,7 @@ class CategoriesScreen extends StatelessWidget {
                   width: 380,
 
                   child: Text(title,
-                      style: GoogleFonts.roboto(
+                      style: TextStyle(
                         fontSize: 60,
                         fontWeight: FontWeight.bold,
                       )),
@@ -32,7 +31,7 @@ class CategoriesScreen extends StatelessWidget {
                 margin: EdgeInsets.only(left: 20),
                 child: Text(
                   'Wallpapers available',
-                  style: GoogleFonts.roboto(
+                  style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                       color: Colors.grey

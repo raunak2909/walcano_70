@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:wallpaper/wallpaper.dart';
 
 class wallpaperScreen extends StatelessWidget {
-  String? image;
-   wallpaperScreen({super.key, required this.image});
+  String image;
+
+  wallpaperScreen({super.key, required this.image});
 
   @override
   Widget build(BuildContext context) {
@@ -12,12 +14,12 @@ class wallpaperScreen extends StatelessWidget {
         decoration: BoxDecoration(
             image: DecorationImage(
                 fit: BoxFit.cover,
-                  image: NetworkImage("${image}"))),
+                image: NetworkImage("${image}"))),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
 
               children: [
                 Column(
@@ -35,7 +37,8 @@ class wallpaperScreen extends StatelessWidget {
                     SizedBox(
                       height: 8,
                     ),
-                    Text('Info', style: GoogleFonts.montserrat(fontSize: 15, color: Colors.white),)
+                    Text('Info', style: TextStyle(
+                        fontSize: 15, color: Colors.white),)
                   ],
                 ),
                 SizedBox(
@@ -43,20 +46,27 @@ class wallpaperScreen extends StatelessWidget {
                 ),
                 Column(
                   children: [
-                    Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.6),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(Icons.download, size: 20, color: Colors.white,),
+                    InkWell(
+                      onTap: () {
+                        downloadWallpaper(context);
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.6),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          Icons.download, size: 20, color: Colors.white,),
 
+                      ),
                     ),
                     SizedBox(
                       height: 8,
                     ),
-                    Text('Save', style: GoogleFonts.montserrat(fontSize: 15, color: Colors.white),)
+                    Text('Save', style: TextStyle(
+                        fontSize: 15, color: Colors.white),)
                   ],
                 ),
                 SizedBox(
@@ -64,30 +74,67 @@ class wallpaperScreen extends StatelessWidget {
                 ),
                 Column(
                   children: [
-                    Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        color: Colors.blueAccent,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(Icons.brush_rounded, size: 20, color: Colors.white,),
+                    InkWell(
+                      onTap: (){
+                        setWallpaper(context);
+                      },
+                      child: Container(
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.blueAccent,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(
+                          Icons.brush_rounded, size: 20, color: Colors.white,),
 
+                      ),
                     ),
                     SizedBox(
                       height: 8,
                     ),
-                    Text('Apply', style: GoogleFonts.montserrat(fontSize: 15, color: Colors.white),)
+                    Text('Apply', style: TextStyle(
+                        fontSize: 15, color: Colors.white),)
                   ],
                 )
               ],
-          ),
-          SizedBox(
-            height: 70,
-          )
+            ),
+            SizedBox(
+              height: 70,
+            )
           ],
         ),
       ),
     );
+  }
+
+  void downloadWallpaper(BuildContext context) {
+    GallerySaver.saveImage(image).then((value) =>
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Wallpaper Downloaded!!'))));
+  }
+
+  void setWallpaper(BuildContext context){
+
+    var downloadStream = Wallpaper.imageDownloadProgress(image);
+
+    downloadStream.listen((event) {
+      print("Progress: $event");
+    }, onDone: () async{
+
+     var check = await Wallpaper.homeScreen(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        options: RequestSizeOptions.RESIZE_FIT
+      );
+
+     print(check);
+
+    }, onError: (e){
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not set Wallpaper: $e')));
+    });
+
+
   }
 }

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wallpaperapp/Models/wallpaper_model.dart';
+import 'package:wallpaperapp/bloc/wallpaper_bloc.dart';
 import 'package:wallpaperapp/screens/Categories_screen.dart';
 import 'package:wallpaperapp/screens/searched_wallpaper_screen.dart';
 import 'package:wallpaperapp/screens/wallpaper_screen.dart';
@@ -16,15 +18,33 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   
-  List<Color> listColor = [
-    Colors.pinkAccent,
-    Colors.blue,
-    Colors.purple,
+  List<Map<String, dynamic>> listColor = [
+    {
+      'color' : Colors.pinkAccent,
+      'colorCode' : "FF4081"
+    },
+    {
+      'color' : Colors.blue,
+      'colorCode' : "0000ff"
+    },
+    {
+      'color' : Colors.orange,
+      'colorCode' : "FF9800"
+    },
+    {
+      'color' : Colors.black,
+      'colorCode' : "000000"
+    },
+    {
+      'color' : Colors.white,
+      'colorCode' : "FFFFFF"
+    },
+    /*Colors.purple,
     Colors.cyan,
     Colors.black,
     Colors.orange,
     Colors.lightBlue,
-    Colors.lightGreen,
+    Colors.lightGreen,*/
   ];
 
 
@@ -62,14 +82,16 @@ class _HomePageState extends State<HomePage> {
   ];
 
   TextEditingController searchController = TextEditingController();
-  var myKey = "fPEP48LlfqZj96ZoZswcg2yDm05Gm2Fj0tHgLvoAnO0DeNyhhSyvarJU";
-  late Future<WallpaperModel> wallpaper;
+  //var myKey = "fPEP48LlfqZj96ZoZswcg2yDm05Gm2Fj0tHgLvoAnO0DeNyhhSyvarJU";
+  //late Future<WallpaperModel> wallpaper;
 
   @override
   void initState() {
     super.initState();
 
-    wallpaper=getWallpaper();
+    //wallpaper=getWallpaper();
+
+    BlocProvider.of<WallpaperBloc>(context).add(GetTrendingWallpaper());
 
   }
 
@@ -101,7 +123,7 @@ class _HomePageState extends State<HomePage> {
                           hintText: ('Find Wallpaper...'),
                           suffixIcon: IconButton(onPressed: (){
 
-                           Navigator.push(context, MaterialPageRoute(builder: (context) =>searchedWallpaper( text: searchController.text)));
+                           Navigator.push(context, MaterialPageRoute(builder: (context) =>searchedWallpaper( query: searchController.text)));
                           }, icon: Icon(Icons.search)),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(21),
@@ -132,7 +154,44 @@ class _HomePageState extends State<HomePage> {
               ),
               SizedBox(
                 height: 200,
-                child: FutureBuilder(future: wallpaper, builder: (context,snapshot){
+                child: BlocBuilder<WallpaperBloc, WallpaperState>(
+                  builder: (_, state){
+                    if(state is WallpaperLoadingState){
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if(state is WallpaperErrorState){
+                      return Center(
+                        child: Text(state.errorMsg),
+                      );
+                    } else if(state is WallpaperLoadedState){
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(children: state.mData.photos!.map((photosModel) => Padding(
+                          padding: const EdgeInsets.only(left: 25),
+                          child: InkWell(
+                            onTap: (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => wallpaperScreen(image: photosModel.src!.portrait!),));
+                            },
+                            child: Container(
+                              clipBehavior: Clip.antiAlias,
+                              height: 200,
+                              width: 150,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Image.network("${photosModel.src!.portrait}",fit: BoxFit.cover,),
+                            ),
+                          ),
+                        )).toList()),
+                      );
+                    }
+
+                    return Container();
+                  },
+                )
+
+                /*FutureBuilder(future: wallpaper, builder: (context,snapshot){
                   if(snapshot.hasData){
                     return SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -159,7 +218,7 @@ class _HomePageState extends State<HomePage> {
                     Center(child: Text("${snapshot.hasError.toString()}"),);
                   }
                   return Center(child: CircularProgressIndicator(),);
-                }),
+                }),*/
               ),
               SizedBox(
                 height: 35,
@@ -183,15 +242,20 @@ class _HomePageState extends State<HomePage> {
                     scrollDirection: Axis.horizontal,
                     itemCount: listColor.length,
                     itemBuilder: (_, index) {
-                      return Container(
-                          margin: EdgeInsets.only(
-                              left: index == 0 ? 20 : 11,
-                              right: index == listColor.length - 1 ? 20 : 0),
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: listColor[index]));
+                      return InkWell(
+                        onTap: (){
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => searchedWallpaper(query: searchController.text.toString(), colorCode: listColor[index]['colorCode']),));
+                        },
+                        child: Container(
+                            margin: EdgeInsets.only(
+                                left: index == 0 ? 20 : 11,
+                                right: index == listColor.length - 1 ? 20 : 0),
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: listColor[index]['color'])),
+                      );
                     }),
               ),
               SizedBox(
@@ -223,7 +287,7 @@ class _HomePageState extends State<HomePage> {
                         6,
                         (index) => GestureDetector(
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => searchedWallpaper( text:  listTitles2[index]['title']!,)));
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => searchedWallpaper( query:  listTitles2[index]['title']!,)));
                                      },
                               child: Container(
                                 // margin: EdgeInsets.all(10),
@@ -253,7 +317,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<WallpaperModel> getWallpaper()async{
+  /*Future<WallpaperModel> getWallpaper()async{
     var url = "https://api.pexels.com/v1/curated";
     var response = await http.get(Uri.parse(url),headers: {"Authorization": myKey});
 
@@ -263,5 +327,5 @@ class _HomePageState extends State<HomePage> {
     }else{
       return WallpaperModel();
     }
-  }
+  }*/
 }
